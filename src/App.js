@@ -11,7 +11,7 @@ const App = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<TodoList />} />
-                <Route path="/task/:taskId" element={<TaskDetail />} />
+                <Route path="/task/:id" element={<TaskDetail />} />
             </Routes>
         </BrowserRouter>
     );

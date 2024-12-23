@@ -1,98 +1,86 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { PlusCircle, X } from 'lucide-react';
-
-// スタイル定義
-const STYLES = {
-    modalOverlay: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50',
-    modalContainer: 'relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4',
-    modalHeader: 'flex items-center justify-between px-6 py-4 border-b',
-    modalTitle: 'text-xl font-semibold text-gray-900',
-    closeButton: 'text-gray-500 hover:text-gray-700 transition-colors',
-    modalContent: 'p-6 space-y-4',
-    input: 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
-    textarea:
-        'w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32 resize-none',
-    select: 'px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
-    addButton:
-        'flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors',
-    error: 'p-4 bg-red-50 border border-red-200 rounded-lg text-red-600',
-    floatingButton:
-        'fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:shadow-xl',
-};
-
-// ステータスオプション
-const STATUS_OPTIONS = [
-    { value: '新規', label: '新規' },
-    { value: '進行中', label: '進行中' },
-    { value: '完了', label: '完了' },
-];
+import { todoInputStyles } from '../Styles/todoInput';
+import { STATUS_OPTIONS } from './index';
 
 /**
  * Todo入力フォームコンポーネント
+ * タスクの新規作成、モーダル表示、フォーム入力管理を担当
  */
 const TodoInput = ({ onAddTodo }) => {
-    // 状態管理
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formState, setFormState] = useState({
+    // 初期フォーム状態
+    const initialFormState = {
         title: '',
         details: '',
         status: '新規',
         errorMsg: '',
-    });
-
-    /**
-     * フォームフィールドの更新ハンドラー
-     */
-    const handleFieldChange = (fieldName) => (event) => {
-        setFormState((prev) => ({
-            ...prev,
-            [fieldName]: event.target.value,
-            errorMsg: '',
-        }));
     };
 
-    /**
-     * タスク追加ハンドラー
-     */
-    const handleAddTask = () => {
-        const { title, details, status } = formState;
+    // State管理
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formState, setFormState] = useState(initialFormState);
 
-        if (title.trim() && details.trim()) {
-            onAddTodo({ title, details, status });
-            setFormState({
-                title: '',
-                details: '',
-                status: '新規',
-                errorMsg: '',
-            });
-            setIsModalOpen(false);
-        } else {
+    /**
+     * フォーム操作関連のハンドラー
+     */
+    const formHandlers = {
+        // フィールド更新
+        handleFieldChange: (fieldName) => (event) => {
             setFormState((prev) => ({
                 ...prev,
-                errorMsg: 'タイトルまたは詳細が空欄です。',
+                [fieldName]: event.target.value,
+                errorMsg: '',
             }));
-        }
+        },
+
+        // タスク追加
+        handleAddTask: () => {
+            const { title, details, status } = formState;
+
+            if (title.trim() && details.trim()) {
+                onAddTodo({ title, details, status });
+                formHandlers.resetAndCloseModal();
+            } else {
+                setFormState((prev) => ({
+                    ...prev,
+                    errorMsg: 'タイトルまたは詳細が空欄です。',
+                }));
+            }
+        },
+
+        // モーダルを閉じてフォームをリセット
+        resetAndCloseModal: () => {
+            setIsModalOpen(false);
+            setFormState(initialFormState);
+        },
     };
 
     /**
-     * モーダルを閉じる際のハンドラー
+     * フォーム入力フィールドの設定
      */
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setFormState({
-            title: '',
-            details: '',
-            status: '新規',
-            errorMsg: '',
-        });
-    };
+    const formFields = [
+        {
+            type: 'input',
+            value: formState.title,
+            onChange: formHandlers.handleFieldChange('title'),
+            placeholder: 'タスクのタイトル',
+            className: todoInputStyles.input,
+        },
+        {
+            type: 'textarea',
+            value: formState.details,
+            onChange: formHandlers.handleFieldChange('details'),
+            placeholder: 'タスクの詳細',
+            className: todoInputStyles.textarea,
+        },
+    ];
 
     return (
         <>
             {/* フローティングアクションボタン */}
             <button
                 onClick={() => setIsModalOpen(true)}
-                className={STYLES.floatingButton}
+                className={todoInputStyles.floatingButton}
                 aria-label="新規タスクを追加"
             >
                 <PlusCircle className="w-6 h-6" />
@@ -100,40 +88,40 @@ const TodoInput = ({ onAddTodo }) => {
 
             {/* モーダル */}
             {isModalOpen && (
-                <div className={STYLES.modalOverlay}>
-                    <div className={STYLES.modalContainer} onClick={(e) => e.stopPropagation()}>
-                        <div className={STYLES.modalHeader}>
-                            <h2 className={STYLES.modalTitle}>新規タスクの追加</h2>
+                <div className={todoInputStyles.modalOverlay}>
+                    <div
+                        className={todoInputStyles.modalContainer}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* モーダルヘッダー */}
+                        <div className={todoInputStyles.modalHeader}>
+                            <h2 className={todoInputStyles.modalTitle}>新規タスクの追加</h2>
                             <button
-                                onClick={handleCloseModal}
-                                className={STYLES.closeButton}
+                                onClick={formHandlers.resetAndCloseModal}
+                                className={todoInputStyles.closeButton}
                                 aria-label="閉じる"
                             >
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
 
-                        <div className={STYLES.modalContent}>
-                            <input
-                                type="text"
-                                value={formState.title}
-                                onChange={handleFieldChange('title')}
-                                placeholder="タスクのタイトル"
-                                className={STYLES.input}
-                            />
+                        {/* モーダルコンテンツ */}
+                        <div className={todoInputStyles.modalContent}>
+                            {/* 入力フィールド */}
+                            {formFields.map((field, index) =>
+                                field.type === 'input' ? (
+                                    <input key={index} {...field} />
+                                ) : (
+                                    <textarea key={index} {...field} />
+                                )
+                            )}
 
-                            <textarea
-                                value={formState.details}
-                                onChange={handleFieldChange('details')}
-                                placeholder="タスクの詳細"
-                                className={STYLES.textarea}
-                            />
-
+                            {/* ステータス選択とボタン */}
                             <div className="flex items-center justify-between">
                                 <select
                                     value={formState.status}
-                                    onChange={handleFieldChange('status')}
-                                    className={STYLES.select}
+                                    onChange={formHandlers.handleFieldChange('status')}
+                                    className={todoInputStyles.select}
                                 >
                                     {STATUS_OPTIONS.map((option) => (
                                         <option key={option.value} value={option.value}>
@@ -142,14 +130,18 @@ const TodoInput = ({ onAddTodo }) => {
                                     ))}
                                 </select>
 
-                                <button onClick={handleAddTask} className={STYLES.addButton}>
+                                <button
+                                    onClick={formHandlers.handleAddTask}
+                                    className={todoInputStyles.addButton}
+                                >
                                     <PlusCircle className="w-4 h-4" />
                                     タスク追加
                                 </button>
                             </div>
 
+                            {/* エラーメッセージ */}
                             {formState.errorMsg && (
-                                <div className={STYLES.error}>{formState.errorMsg}</div>
+                                <div className={todoInputStyles.error}>{formState.errorMsg}</div>
                             )}
                         </div>
                     </div>

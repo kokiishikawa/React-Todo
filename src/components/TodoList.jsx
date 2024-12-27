@@ -5,47 +5,68 @@ import TodoInput from './TodoInput';
 import TaskCard from './TaskCard';
 import { STATUS_OPTIONS } from './index';
 import { todoListStyles } from '../Styles/todoList';
+import { useTaskContext } from './TodoContext';
 
 /**
  * タスク管理コンポーネント
- * タスクの一覧表示、追加、削除、ステータス変更、検索機能を提供
+ * @description タスクの一覧表示、追加、削除、編集、検索機能を提供するメインコンポーネント
  */
 const TodoList = () => {
+    // ナビゲーションと状態管理のフック
     const navigate = useNavigate();
-
-    // State管理
-    const [tasks, setTasks] = useState([]);
+    const { tasks, setTasks } = useTaskContext();
     const [searchKeyword, setSearchKeyword] = useState('');
 
-    // タスク操作関連のハンドラー
-    const handleTaskOperations = {
-        /**
-         * 新規タスク追加
-         */
-        addTodo: useCallback((newTodo) => {
-            const newTask = { ...newTodo, id: Date.now() };
-            setTasks((prevTasks) => [...prevTasks, newTask]);
-        }, []),
-
-        /**
-         * タスク削除
-         */
-        deleteTodo: useCallback((id) => {
-            setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-        }, []),
-
-        /**
-         * タスクステータス更新
-         */
-        updateTaskStatus: useCallback((id, newStatus) => {
+    /**
+     * タスク更新処理
+     * @param {Object} updatedTask - 更新するタスクの内容
+     */
+    const updateTask = useCallback(
+        (updatedTask) => {
             setTasks((prevTasks) =>
-                prevTasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task))
+                prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
             );
-        }, []),
+        },
+        [setTasks]
+    );
 
-        /**
-         * タスク詳細画面への遷移
-         */
+    /**
+     * タスク操作関連の処理をまとめたオブジェクト
+     */
+    const handleTaskOperations = {
+        // 新規タスク追加
+        addTodo: useCallback(
+            (newTodo) => {
+                const newTask = {
+                    ...newTodo,
+                    id: Date.now(), // ユニークIDとしてタイムスタンプを使用
+                };
+                setTasks((prevTasks) => [...prevTasks, newTask]);
+            },
+            [setTasks]
+        ),
+
+        // タスク削除
+        deleteTodo: useCallback(
+            (id) => {
+                setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+            },
+            [setTasks]
+        ),
+
+        // タスクのステータス更新
+        updateTaskStatus: useCallback(
+            (id, newStatus) => {
+                setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                        task.id === id ? { ...task, status: newStatus } : task
+                    )
+                );
+            },
+            [setTasks]
+        ),
+
+        // タスク詳細画面への遷移
         handleTaskClick: useCallback(
             (task) => {
                 navigate(`/task/${task.id}`, {
@@ -56,18 +77,16 @@ const TodoList = () => {
         ),
     };
 
-    // 検索関連の処理
+    /**
+     * 検索関連の処理をまとめたオブジェクト
+     */
     const searchOperations = {
-        /**
-         * 検索キーワード更新
-         */
+        // 検索キーワード更新
         handleSearch: useCallback((keyword) => {
             setSearchKeyword(keyword.toLowerCase());
         }, []),
 
-        /**
-         * タスクのフィルタリング
-         */
+        // タスクの検索フィルタリング
         filteredTasks: useMemo(() => {
             if (!searchKeyword) return tasks;
             return tasks.filter(
@@ -87,6 +106,7 @@ const TodoList = () => {
 
     /**
      * タスク一覧のレンダリング
+     * メモ化によりパフォーマンスを最適化
      */
     const renderedTasks = useMemo(
         () =>
@@ -98,6 +118,7 @@ const TodoList = () => {
                     deleteTodo={handleTaskOperations.deleteTodo}
                     getStatusInfo={getStatusInfo}
                     onTaskClick={handleTaskOperations.handleTaskClick}
+                    updateTask={updateTask}
                 />
             )),
         [
@@ -106,6 +127,7 @@ const TodoList = () => {
             handleTaskOperations.deleteTodo,
             getStatusInfo,
             handleTaskOperations.handleTaskClick,
+            updateTask,
         ]
     );
 

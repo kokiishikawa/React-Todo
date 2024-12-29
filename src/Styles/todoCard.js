@@ -11,4 +11,5 @@ export const todoCardStyles = {
     select: 'px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500',
     deleteButton: 'p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors',
     deleteIcon: 'w-4 h-4',
+    statusWrapper: 'flex items-center gap-2',
 };

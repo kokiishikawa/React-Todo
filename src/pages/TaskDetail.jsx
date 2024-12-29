@@ -6,7 +6,7 @@ import { todoDetail } from '../Styles/taskDetail';
 
 const TaskDetail = () => {
     const navigate = useNavigate();
-    const { updateTask } = useTaskContext(); // Contextから関数を取得
+    const { updateTask } = useTaskContext();
     const { state } = useLocation();
     const taskData = state?.taskData;
 

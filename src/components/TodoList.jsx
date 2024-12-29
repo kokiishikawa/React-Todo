@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TodoSearch from './TodoSearch';
 import TodoInput from './TodoInput';
 import TaskCard from './TaskCard';
-import { STATUS_OPTIONS } from './index';
+import { STATUS_OPTIONS, PRIORITY_OPTIONS } from './index';
 import { todoListStyles } from '../Styles/todoList';
 import { useTaskContext } from './TodoContext';
 
@@ -40,6 +40,7 @@ const TodoList = () => {
                 const newTask = {
                     ...newTodo,
                     id: Date.now(), // ユニークIDとしてタイムスタンプを使用
+                    priority: '中',
                 };
                 setTasks((prevTasks) => [...prevTasks, newTask]);
             },
@@ -60,6 +61,18 @@ const TodoList = () => {
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
                         task.id === id ? { ...task, status: newStatus } : task
+                    )
+                );
+            },
+            [setTasks]
+        ),
+
+        // タスクの優先度更新
+        updateTaskPriority: useCallback(
+            (id, newPriority) => {
+                setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                        task.id === id ? { ...task, priority: newPriority } : task
                     )
                 );
             },
@@ -104,6 +117,10 @@ const TodoList = () => {
         return STATUS_OPTIONS.find((option) => option.value === status) || STATUS_OPTIONS[0];
     }, []);
 
+    const getPriorityInfo = useCallback((priority) => {
+        return PRIORITY_OPTIONS.find((option) => option.value === priority) || PRIORITY_OPTIONS[0];
+    }, []);
+
     /**
      * タスク一覧のレンダリング
      * メモ化によりパフォーマンスを最適化
@@ -115,8 +132,10 @@ const TodoList = () => {
                     key={task.id}
                     task={task}
                     updateTaskStatus={handleTaskOperations.updateTaskStatus}
+                    updateTaskPriority={handleTaskOperations.updateTaskPriority}
                     deleteTodo={handleTaskOperations.deleteTodo}
                     getStatusInfo={getStatusInfo}
+                    getPriorityInfo={getPriorityInfo}
                     onTaskClick={handleTaskOperations.handleTaskClick}
                     updateTask={updateTask}
                 />
@@ -124,8 +143,10 @@ const TodoList = () => {
         [
             searchOperations.filteredTasks,
             handleTaskOperations.updateTaskStatus,
+            handleTaskOperations.updateTaskPriority,
             handleTaskOperations.deleteTodo,
             getStatusInfo,
+            getPriorityInfo,
             handleTaskOperations.handleTaskClick,
             updateTask,
         ]

@@ -1,22 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Trash2 } from 'lucide-react';
-import { STATUS_OPTIONS } from './index';
+import { STATUS_OPTIONS, PRIORITY_OPTIONS } from './index';
 import { todoCardStyles } from '../Styles/todoCard';
 
 /**
  * タスクカードコンポーネント
- * タスクの詳細表示、ステータス変更、削除機能を提供
+ * タスクの詳細表示、ステータス変更、優先度変更、削除機能を提供
  *
  * @param {Object} task - タスク情報（id, title, details, status）
  * @param {Function} updateTaskStatus - タスクのステータス更新関数
+ * @param {Function} updateTaskPriority - タスクの優先度更新関数
  * @param {Function} deleteTodo - タスク削除関数
  * @param {Function} getStatusInfo - ステータス情報取得関数
+ * @param {Function} getPriorityInfo - 優先度情報取得関数
  * @param {Function} onTaskClick - タスククリック時のコールバック関数
  */
-const TaskCard = ({ task, updateTaskStatus, deleteTodo, getStatusInfo, onTaskClick }) => {
-    // タスクの現在のステータス情報を取得（アイコンと色情報を含む）
+const TaskCard = ({
+    task,
+    updateTaskStatus,
+    updateTaskPriority,
+    deleteTodo,
+    getStatusInfo,
+    getPriorityInfo,
+    onTaskClick,
+}) => {
+    // タスクの現在のステータス、優先度情報を取得（アイコンと色情報を含む）
     const statusInfo = getStatusInfo(task.status);
+    const priorityInfo = getPriorityInfo(task.priority);
     const StatusIcon = statusInfo.icon;
 
     /**
@@ -47,6 +58,10 @@ const TaskCard = ({ task, updateTaskStatus, deleteTodo, getStatusInfo, onTaskCli
                             <StatusIcon className={todoCardStyles.statusIcon} />
                             {statusInfo.label}
                         </span>
+                        {/* 優先度バッチ表示領域 */}
+                        <span className={`${todoCardStyles.statusBadge} ${priorityInfo.color}`}>
+                            {priorityInfo.label}
+                        </span>
                     </div>
                 </div>
                 {/* アクション領域（ステータス変更、削除ボタン） */}
@@ -58,6 +73,18 @@ const TaskCard = ({ task, updateTaskStatus, deleteTodo, getStatusInfo, onTaskCli
                         className={todoCardStyles.select}
                     >
                         {STATUS_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    {/* 優先度セレクトボックス */}
+                    <select
+                        value={task.priority}
+                        onChange={(e) => updateTaskPriority(task.id, e.target.value)}
+                        className={todoCardStyles.select}
+                    >
+                        {PRIORITY_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -83,11 +110,14 @@ TaskCard.propTypes = {
         title: PropTypes.string.isRequired,
         details: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
+        priority: PropTypes.string.isRequired,
     }).isRequired,
     updateTaskStatus: PropTypes.func.isRequired,
     deleteTodo: PropTypes.func.isRequired,
     getStatusInfo: PropTypes.func.isRequired,
-    onTaskClick: PropTypes.func.isRequired, // onTaskClickのPropType定義を追加
+    updateTaskPriority: PropTypes.func.isRequired,
+    getPriorityInfo: PropTypes.func.isRequired,
+    onTaskClick: PropTypes.func.isRequired,
 };
 
 export default TaskCard;

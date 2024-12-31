@@ -4,7 +4,7 @@ import TodoSearch from './TodoSearch';
 import TodoInput from './TodoInput';
 import TaskCard from './TaskCard';
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from './index';
-import { todoListStyles } from '../Styles/todoList';
+import { todoListStyles } from '../styles/todoList';
 import { useTaskContext } from './TodoContext';
 
 /**

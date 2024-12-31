@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
-import { todoSearchStyles } from '../Styles/todoSearch';
+import { todoSearchStyles } from '../styles/todoSearch';
 
 /**
  * タスク検索コンポーネント

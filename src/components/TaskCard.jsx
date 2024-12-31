@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Trash2 } from 'lucide-react';
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from './index';
-import { todoCardStyles } from '../Styles/todoCard';
+import { todoCardStyles } from '../styles/todoCard';
 
 /**
  * タスクカードコンポーネント

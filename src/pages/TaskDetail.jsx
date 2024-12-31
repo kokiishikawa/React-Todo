@@ -62,6 +62,15 @@ const TaskDetail = () => {
                 {/* ヘッダー部分 */}
                 <div className={taskDetailStyles.header.wrapper}>
                     <div className={taskDetailStyles.header.content}>
+                        {/* ホームに戻るボタン実装（スタイル変更予定） */}
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => navigate('/')}
+                                className={taskDetailStyles.button.back}
+                            >
+                                戻る
+                            </button>
+                        </div>
                         <h1 className={taskDetailStyles.header.title}>タスク詳細</h1>
                         <div className={taskDetailStyles.header.buttons}>
                             {isEditing ? (

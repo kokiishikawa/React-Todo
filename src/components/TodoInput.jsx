@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PlusCircle, X } from 'lucide-react';
-import { todoInputStyles } from '../Styles/todoInput';
+import { todoInputStyles } from '../styles/todoInput';
 import { STATUS_OPTIONS } from './index';
 import { type } from '@testing-library/user-event/dist/type';
 

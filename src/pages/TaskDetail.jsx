@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { STATUS_OPTIONS } from '../components/index';
+import { STATUS_OPTIONS, PRIORITY_OPTIONS } from '../components/index';
 import { useTaskContext } from '../components/TodoContext';
-import { todoDetail } from '../Styles/taskDetail';
+import { taskDetailStyles } from '../styles/todoDetail';
 
 const TaskDetail = () => {
     const navigate = useNavigate();
@@ -57,83 +57,137 @@ const TaskDetail = () => {
         return <div>タスクが見つかりません</div>;
     }
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex justify-between mb-4">
-                    <h1 className="text-2xl font-bold">タスク詳細</h1>
-                    <div className="space-x-2">
-                        {isEditing ? (
-                            <>
+        <div className={taskDetailStyles.wrapper}>
+            <div className={taskDetailStyles.container}>
+                {/* ヘッダー部分 */}
+                <div className={taskDetailStyles.header.wrapper}>
+                    <div className={taskDetailStyles.header.content}>
+                        <h1 className={taskDetailStyles.header.title}>タスク詳細</h1>
+                        <div className={taskDetailStyles.header.buttons}>
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        onClick={handleSave}
+                                        className={taskDetailStyles.button.save}
+                                    >
+                                        保存
+                                    </button>
+                                    <button
+                                        onClick={handleCancel}
+                                        className={taskDetailStyles.button.cancel}
+                                    >
+                                        キャンセル
+                                    </button>
+                                </>
+                            ) : (
                                 <button
-                                    onClick={handleSave}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    onClick={handleEditStart}
+                                    className={taskDetailStyles.button.edit}
                                 >
-                                    保存
+                                    編集
                                 </button>
-                                <button
-                                    onClick={handleCancel}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                                >
-                                    キャンセル
-                                </button>
-                            </>
-                        ) : (
-                            <button
-                                onClick={handleEditStart}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                            >
-                                編集
-                            </button>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                {/* メインコンテンツ */}
+                <div className={taskDetailStyles.content.wrapper}>
+                    {/* タイトルセクション */}
                     <div>
-                        <label className={todoDetail.label}>タイトル</label>
+                        <label className={taskDetailStyles.content.label}>タイトル</label>
                         {isEditing ? (
                             <input
                                 type="text"
                                 value={editedTask.title}
                                 onChange={handleInputChange('title')}
-                                className="w-full mt-1 p-2 border rounded"
+                                className={taskDetailStyles.content.input}
                             />
                         ) : (
-                            <p className="mt-1">{taskData?.title}</p>
+                            <p className={taskDetailStyles.content.text.title}>{taskData?.title}</p>
                         )}
                     </div>
 
+                    {/* 詳細セクション */}
                     <div>
-                        <label className={todoDetail.label}>詳細</label>
+                        <label className={taskDetailStyles.content.label}>詳細</label>
                         {isEditing ? (
                             <textarea
                                 value={editedTask.details}
                                 onChange={handleInputChange('details')}
-                                className="w-full mt-1 p-2 border rounded"
+                                className={taskDetailStyles.content.input}
                                 rows={4}
                             />
                         ) : (
-                            <p className="mt-1">{taskData?.details}</p>
+                            <p className={taskDetailStyles.content.text.content}>
+                                {taskData?.details}
+                            </p>
                         )}
                     </div>
 
-                    <div>
-                        <label className="font-medium text-gray-600">ステータス</label>
-                        {isEditing ? (
-                            <select
-                                value={editedTask.status}
-                                onChange={handleInputChange('status')}
-                                className="w-full mt-1 p-2 border rounded"
-                            >
-                                {STATUS_OPTIONS.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p className="mt-1">{taskData?.status}</p>
-                        )}
+                    {/* ステータス、優先度、期日を横並びに */}
+                    <div className={taskDetailStyles.grid.container}>
+                        <div>
+                            <label className={taskDetailStyles.content.label}>ステータス</label>
+                            {isEditing ? (
+                                <select
+                                    value={editedTask.status}
+                                    onChange={handleInputChange('status')}
+                                    className={taskDetailStyles.content.input}
+                                >
+                                    {STATUS_OPTIONS.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <p className={taskDetailStyles.content.text.status}>
+                                    {taskData?.status}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* 優先度セクション */}
+                        <div>
+                            <label className={taskDetailStyles.content.label}>優先度</label>
+                            {isEditing ? (
+                                <select
+                                    value={editedTask.priority}
+                                    onChange={handleInputChange('priority')}
+                                    className={taskDetailStyles.content.input}
+                                >
+                                    {PRIORITY_OPTIONS.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <p className={taskDetailStyles.content.text.status}>
+                                    {taskData?.priority}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* 期日セクション */}
+                        <div>
+                            <label className={taskDetailStyles.content.label}>期日</label>
+                            {isEditing ? (
+                                <input
+                                    type="date"
+                                    value={editedTask.dueDate || ''}
+                                    onChange={handleInputChange('dueDate')}
+                                    className={taskDetailStyles.content.input}
+                                />
+                            ) : (
+                                <p className={taskDetailStyles.content.text.status}>
+                                    {taskData?.dueDate
+                                        ? new Date(taskData.dueDate).toLocaleDateString('ja-JP')
+                                        : '未設定'}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -12,4 +12,6 @@ export const todoCardStyles = {
     deleteButton: 'p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors',
     deleteIcon: 'w-4 h-4',
     statusWrapper: 'flex items-center gap-2',
+    dueDateWrapper: 'flex justify-between items-center mb-2',
+    dueDate: 'text-sm text-gray-600',
 };

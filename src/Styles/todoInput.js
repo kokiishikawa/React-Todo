@@ -14,4 +14,5 @@ export const todoInputStyles = {
     error: 'p-4 bg-red-50 border border-red-200 rounded-lg text-red-600',
     floatingButton:
         'fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:shadow-xl',
+    dueDate: 'w-full mt-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500',
 };

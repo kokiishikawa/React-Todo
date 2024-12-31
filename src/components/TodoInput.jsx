@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PlusCircle, X } from 'lucide-react';
 import { todoInputStyles } from '../Styles/todoInput';
 import { STATUS_OPTIONS } from './index';
+import { type } from '@testing-library/user-event/dist/type';
 
 /**
  * Todo入力フォームコンポーネント
@@ -14,6 +15,7 @@ const TodoInput = ({ onAddTodo }) => {
         details: '',
         status: '新規',
         errorMsg: '',
+        dueDate: '',
     };
 
     // State管理
@@ -35,10 +37,10 @@ const TodoInput = ({ onAddTodo }) => {
 
         // タスク追加
         handleAddTask: () => {
-            const { title, details, status } = formState;
+            const { title, details, status, dueDate } = formState;
 
             if (title.trim() && details.trim()) {
-                onAddTodo({ title, details, status });
+                onAddTodo({ title, details, status, dueDate });
                 formHandlers.resetAndCloseModal();
             } else {
                 setFormState((prev) => ({
@@ -57,10 +59,12 @@ const TodoInput = ({ onAddTodo }) => {
 
     /**
      * フォーム入力フィールドの設定
+     * labelの表示実装はなし
      */
     const formFields = [
         {
             type: 'input',
+            label: 'タイトル',
             value: formState.title,
             onChange: formHandlers.handleFieldChange('title'),
             placeholder: 'タスクのタイトル',
@@ -68,10 +72,18 @@ const TodoInput = ({ onAddTodo }) => {
         },
         {
             type: 'textarea',
+            label: '詳細',
             value: formState.details,
             onChange: formHandlers.handleFieldChange('details'),
             placeholder: 'タスクの詳細',
             className: todoInputStyles.textarea,
+        },
+        {
+            type: 'date',
+            label: '期日',
+            value: formState.dueDate,
+            onChange: formHandlers.handleFieldChange('dueDate'),
+            className: todoInputStyles.dueDate,
         },
     ];
 
@@ -108,13 +120,15 @@ const TodoInput = ({ onAddTodo }) => {
                         {/* モーダルコンテンツ */}
                         <div className={todoInputStyles.modalContent}>
                             {/* 入力フィールド */}
-                            {formFields.map((field, index) =>
-                                field.type === 'input' ? (
-                                    <input key={index} {...field} />
-                                ) : (
-                                    <textarea key={index} {...field} />
-                                )
-                            )}
+                            {formFields.map((field, index) => {
+                                if (field.type === 'input') {
+                                    return <input key={index} {...field} />;
+                                } else if (field.type === 'textarea') {
+                                    return <textarea key={index} {...field} />;
+                                } else {
+                                    return <input key={index} {...field} />;
+                                }
+                            })}
 
                             {/* ステータス選択とボタン */}
                             <div className="flex items-center justify-between">

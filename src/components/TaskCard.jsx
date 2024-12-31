@@ -6,9 +6,9 @@ import { todoCardStyles } from '../Styles/todoCard';
 
 /**
  * タスクカードコンポーネント
- * タスクの詳細表示、ステータス変更、優先度変更、削除機能を提供
+ * @description タスクの詳細表示、ステータス変更、優先度変更、削除機能を提供
  *
- * @param {Object} task - タスク情報（id, title, details, status）
+ * @param {Object} task - タスク情報（id, title, details, status, priority）
  * @param {Function} updateTaskStatus - タスクのステータス更新関数
  * @param {Function} updateTaskPriority - タスクの優先度更新関数
  * @param {Function} deleteTodo - タスク削除関数
@@ -43,60 +43,67 @@ const TaskCard = ({
     return (
         <div
             className={todoCardStyles.wrapper}
-            onClick={() => onTaskClick(task)} // カード全体のクリックイベント
+            onClick={() => onTaskClick(task)}
             role="button"
-            tabIndex={0} // キーボード操作のためのタブインデックス
+            tabIndex={0}
         >
             <div className={todoCardStyles.contentWrapper}>
                 {/* タスクのメインコンテンツ領域 */}
                 <div className={todoCardStyles.mainContent}>
                     <h3 className={todoCardStyles.title}>{task.title}</h3>
                     <p className={todoCardStyles.details}>{task.details}</p>
-                    {/* ステータスバッジ表示領域 */}
+                    {/* ステータスと優先度のバッジ */}
                     <div className={todoCardStyles.statusWrapper}>
                         <span className={`${todoCardStyles.statusBadge} ${statusInfo.color}`}>
                             <StatusIcon className={todoCardStyles.statusIcon} />
                             {statusInfo.label}
                         </span>
-                        {/* 優先度バッチ表示領域 */}
                         <span className={`${todoCardStyles.statusBadge} ${priorityInfo.color}`}>
                             {priorityInfo.label}
                         </span>
                     </div>
                 </div>
-                {/* アクション領域（ステータス変更、削除ボタン） */}
-                <div className={todoCardStyles.actionsWrapper} onClick={handleActionsClick}>
-                    {/* ステータス変更セレクトボックス */}
-                    <select
-                        value={task.status}
-                        onChange={(e) => updateTaskStatus(task.id, e.target.value)}
-                        className={todoCardStyles.select}
-                    >
-                        {STATUS_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    {/* 優先度セレクトボックス */}
-                    <select
-                        value={task.priority}
-                        onChange={(e) => updateTaskPriority(task.id, e.target.value)}
-                        className={todoCardStyles.select}
-                    >
-                        {PRIORITY_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    {/* 削除ボタン */}
-                    <button
-                        onClick={() => deleteTodo(task.id)}
-                        className={todoCardStyles.deleteButton}
-                    >
-                        <Trash2 className={todoCardStyles.deleteIcon} />
-                    </button>
+
+                {/* アクション領域 */}
+                <div className="flex flex-col gap-4">
+                    {/* 期日表示 */}
+                    <div className="text-sm text-gray-600 text-right">
+                        期日:{''}
+                        {task.dueDate
+                            ? new Date(task.dueDate).toLocaleDateString('ja-JP')
+                            : '未設定'}
+                    </div>
+                    {/* 操作ボタン群 */}
+                    <div className={todoCardStyles.actionsWrapper} onClick={handleActionsClick}>
+                        <select
+                            value={task.status}
+                            onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+                            className={todoCardStyles.select}
+                        >
+                            {STATUS_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            value={task.priority}
+                            onChange={(e) => updateTaskPriority(task.id, e.target.value)}
+                            className={todoCardStyles.select}
+                        >
+                            {PRIORITY_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={() => deleteTodo(task.id)}
+                            className={todoCardStyles.deleteButton}
+                        >
+                            <Trash2 className={todoCardStyles.deleteIcon} />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -117,6 +117,9 @@ const TodoList = () => {
         return STATUS_OPTIONS.find((option) => option.value === status) || STATUS_OPTIONS[0];
     }, []);
 
+    /**
+     * タスクの優先度情報を取得
+     */
     const getPriorityInfo = useCallback((priority) => {
         return PRIORITY_OPTIONS.find((option) => option.value === priority) || PRIORITY_OPTIONS[0];
     }, []);
